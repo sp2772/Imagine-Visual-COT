@@ -81,7 +81,7 @@ For the full architecture diagrams (Mermaid flowcharts), see **[ARCHITECTURE_MER
 
 ## 3. Key Results
 
-### Phase A — Can the LLM use a real image? ✅
+### Phase A — Can the LLM use a real image? 
 
 | Condition | Accuracy (val) |
 |-----------|---------------|
@@ -135,56 +135,17 @@ For the full architecture diagrams (Mermaid flowcharts), see **[ARCHITECTURE_MER
 
 ```
 Imagine_Visual_COT/
-├── imagine_step1.py               # Step 1: load backbone, extract h_t
-├── imagine_step2.py               # Step 2: Imagination Head + gate
-├── imagine_step3.py               # Step 3: anti-collapse loss demo
-├── imagine_step4.py               # Step 4: feedback chain (causal, gradients)
-├── imagine_step5.py               # Step 5: Stage 1 COCO alignment (SmolLM2)
-├── imagine_step6.py               # Step 6: gate training
-├── imagine_step7.py               # Step 7: retrieval decoder (stand-in)
-├── imagine_step8.py               # Step 8: joint training (SmolLM2, frozen LLM)
-├── imagine_step8b.py              # Step 8b: soft-prompt control
-├── imagine_step8c.py              # Step 8c: teacher forcing + LoRA
-├── imagine_step8d.py              # Step 8d: bootstrap CIs, 150 fresh questions
-├── imagine_step8_advanced_a0.py   # Phase A0: caption alignment (Qwen2.5-0.5B)
-├── imagine_step8_advanced_a.py    # Phase A: Reader + LoRA on spatial task
-├── imagine_step8_advanced_a_eval.py # Phase A evaluation (no training)
-├── imagine_step8_advanced_b.py    # Phase B: train Imagination Head
-├── imagine_step8_advanced_c.py    # Phase C: held-out evaluation + galleries
-├── imagine_adv_lib.py             # Shared library: Reader, Head, eval, bootstrap
-├── imagine_data.py                # Data helpers: COCO, ScienceQA, CLIP
-├── imagine_build_spatial_v2.py    # Build the leak-free spatial dataset (v2)
-├── imagine_build_spatial_cot.py   # Build spatial v1 (leaky — superseded)
-├── imagine_audit_data.py          # Data-leak auditor (8 checks per family)
-├── imagine_diagnose_data.py       # ScienceQA text-solvability diagnostics
-├── imagine_check_env.py           # Version-consistency check
-├── imagine_fetch_public.py        # Public dataset fetcher (unused)
-├── imagine_step9.py               # (written, never run) LoRA joint
-├── imagine_step10.py              # (written, never run) GRPO
-│
-├── imagine_ckpt/                  # Model checkpoints (tracked)
-│   ├── adv_b_qwen2.5-0.5b_grid3_spatial2_imagine/   ← Phase B head (latest)
-│   ├── adv_a_qwen2.5-0.5b_grid3_spatial2/           ← Phase A reader + LoRA
-│   ├── adv_a0_qwen2.5-0.5b_grid3/                   ← A0 aligned reader
-│   ├── lora_step8c/                                  ← Step 8c LoRA adapter
-│   ├── chain_step8c.pt                               ← Step 8c chain weights
-│   └── ...
-│
+├── archive/                       # Superseded library scripts
+├── dataset/                       # Data-build and audit scripts
+├── docs/                          # Architecture and research summary docs
+├── experiments/
+│   ├── track1_smollm2/            # Early SmolLM2-135M experiments (Steps 1-8d)
+│   └── track2_advanced/           # Qwen2.5-0.5B phases A0, A, A-eval, B, C
+├── lib/                           # Shared library (reader, head, eval, bootstrap)
+├── imagine_ckpt/                  # Saved model checkpoints
 ├── imagine_out/                   # Output galleries (PNG)
-│   ├── adv_c_..._test_imagination.png
-│   ├── adv_c_..._test_ood_imagination.png
-│   └── step7_retrieval.png
-│
-├── imagine_cache/                 # (NOT tracked — regenerate) CLIP features,
-│                                  #   spatial v2 JSON + images (~4.2 GB)
-│
-├── old_progs/                     # Superseded versions of library scripts
-├── ARCHITECTURE_MERMAID.md        # 12 Mermaid diagrams of the full pipeline
-├── RESEARCH_SUMMARY_v4.md         # Full lab notebook with all results
-├── IMAGINE_RESEARCH_SUMMARY.md    # Earlier summary (v1)
-├── IMAGINE_RESEARCH_SUMMARY_v2.md # Earlier summary (v2)
-├── RESEARCH_SUMMARY_v3.md         # Earlier summary (v3)
-├── research_plan_new.pdf          # Original research plan (PDF)
+├── imagine_cache/                 # (NOT tracked) Generated dataset + CLIP cache
+├── RUNNING.md                     # Full step-by-step run instructions
 ├── requirements.txt
 └── .gitignore
 ```
@@ -319,14 +280,14 @@ All comparisons use **paired bootstrap 95% CIs** (10 000 resamples). Verdict: **
 
 | # | Finding | Status |
 |---|---------|--------|
-| 1 | Early "imagination helps" numbers were a **soft-prompt artefact** — a trained extra token, not visual content | ✅ Solid |
-| 2 | ScienceQA is **text-solvable**: 65% have hints, 14% contain the gold answer string; swapping the image changes nothing | ✅ Solid |
-| 3 | Spatial dataset v1 **leaked the answer** in images (verdict text, green/red colour, answer always at index 0) | ✅ Solid |
-| 4 | Leak-free v2: **true image beats wrong image by +8.1 pp (CI +6.4–+9.9)** — the visual path works | ✅ Solid |
-| 5 | Text alone already solves most `imagine` families in-distribution (~95–100%); headroom is in `grid_walk` and OOD `triangle` | ✅ Solid |
-| 6 | **OOD `triangle`**: text drops to chance (52%), true sketch gives 98% — a scale-free picture generalises where text arithmetic fails | ✅ Solid observation |
-| 7 | **Phase B/C in-distribution**: own beats own_shuffled by **+1.99 pp (SUPPORTED)**; Top-5 retrieval 23% (60× chance) — imagination is **example-specific** | ✅ Solid |
-| 8 | **Phase C OOD — single-shot bottleneck**: own (85.9%) ≈ const (85.3%). On OOD triangle: own 51.7% = const 52.0% ≪ oracle 98.2%. A one-shot MLP cannot simulate geometry that the LLM's hidden state `h` itself failed to compute | ✅ Solid |
+| 1 | Early "imagination helps" numbers were a **soft-prompt artefact** — a trained extra token, not visual content |  Solid |
+| 2 | ScienceQA is **text-solvable**: 65% have hints, 14% contain the gold answer string; swapping the image changes nothing |  Solid |
+| 3 | Spatial dataset v1 **leaked the answer** in images (verdict text, green/red colour, answer always at index 0) |  Solid |
+| 4 | Leak-free v2: **true image beats wrong image by +8.1 pp (CI +6.4–+9.9)** — the visual path works |  Solid |
+| 5 | Text alone already solves most `imagine` families in-distribution (~95–100%); headroom is in `grid_walk` and OOD `triangle` |  Solid |
+| 6 | **OOD `triangle`**: text drops to chance (52%), true sketch gives 98% — a scale-free picture generalises where text arithmetic fails |  Solid observation |
+| 7 | **Phase B/C in-distribution**: own beats own_shuffled by **+1.99 pp (SUPPORTED)**; Top-5 retrieval 23% (60× chance) — imagination is **example-specific** |  Solid |
+| 8 | **Phase C OOD — single-shot bottleneck**: own (85.9%) ≈ const (85.3%). On OOD triangle: own 51.7% = const 52.0% ≪ oracle 98.2%. A one-shot MLP cannot simulate geometry that the LLM's hidden state `h` itself failed to compute |  Solid |
 
 ---
 
