@@ -193,22 +193,24 @@ Imagine_Visual_COT/
 
 ## 5. Quickstart
 
+> **Always run scripts from the project root** so that cross-module imports and data paths resolve correctly. See **[RUNNING.md](RUNNING.md)** for the full guide.
+
 ```powershell
 # 1. Clone
-git clone https://github.com/<your-username>/Imagine-Visual-COT.git
+git clone https://github.com/sp2772/Imagine-Visual-COT.git
 cd Imagine-Visual-COT
 
 # 2. Install dependencies (Python 3.9+, CUDA recommended)
 pip install -r requirements.txt
 
 # 3. Sanity check environment
-python imagine_check_env.py
+python dataset/imagine_check_env.py
 
 # 4. Build the leak-free spatial dataset (~10 min, creates imagine_cache/)
-python imagine_build_spatial_v2.py --n_train 40000 --n_val 3000 --n_test 3000 --n_ood 2000
+python dataset/imagine_build_spatial_v2.py --n_train 40000 --n_val 3000 --n_test 3000 --n_ood 2000
 
 # 5. Audit the dataset for leaks
-python imagine_audit_data.py imagine_cache/spatial_cot_v2/val.json
+python dataset/imagine_audit_data.py imagine_cache/spatial_cot_v2/val.json
 ```
 
 ---
@@ -246,17 +248,17 @@ python imagine_step8_advanced_c.py --data spatial2 --vis grid --grid 3 \
 ### Early-stage experiments (SmolLM2-135M, Steps 1–8d)
 
 ```powershell
-python imagine_step1.py   # backbone + hidden states
-python imagine_step2.py   # Imagination Head + gate
-python imagine_step3.py   # anti-collapse loss demo
-python imagine_step4.py   # feedback loop (causality check)
-python imagine_step5.py   # COCO alignment (top-1 0.34)
-python imagine_step6.py   # gate training (val acc 0.956)
-python imagine_step7.py   # retrieval decoder gallery
-python imagine_step8.py   # joint training
-python imagine_step8b.py  # soft-prompt control
-python imagine_step8c.py  # teacher forcing + LoRA
-python imagine_step8d.py  # bootstrap CI significance
+python experiments/track1_smollm2/imagine_step1.py   # backbone + hidden states
+python experiments/track1_smollm2/imagine_step2.py   # Imagination Head + gate
+python experiments/track1_smollm2/imagine_step3.py   # anti-collapse loss demo
+python experiments/track1_smollm2/imagine_step4.py   # feedback loop (causality check)
+python experiments/track1_smollm2/imagine_step5.py   # COCO alignment (top-1 0.34)
+python experiments/track1_smollm2/imagine_step6.py   # gate training (val acc 0.956)
+python experiments/track1_smollm2/imagine_step7.py   # retrieval decoder gallery
+python experiments/track1_smollm2/imagine_step8.py   # joint training
+python experiments/track1_smollm2/imagine_step8b.py  # soft-prompt control
+python experiments/track1_smollm2/imagine_step8c.py  # teacher forcing + LoRA
+python experiments/track1_smollm2/imagine_step8d.py  # bootstrap CI significance
 ```
 
 ---
@@ -266,7 +268,7 @@ python imagine_step8d.py  # bootstrap CI significance
 The `imagine_cache/` folder (not tracked in git) holds the generated spatial dataset. Regenerate it with:
 
 ```powershell
-python imagine_build_spatial_v2.py --n_train 40000 --n_val 3000 --n_test 3000 --n_ood 2000
+python dataset/imagine_build_spatial_v2.py --n_train 40000 --n_val 3000 --n_test 3000 --n_ood 2000
 ```
 
 ### Task families
@@ -380,7 +382,7 @@ If you use this codebase or build on these results, please link back to this rep
 python imagine_check_env.py
 
 # Build + audit dataset
-python imagine_build_spatial_v2.py --n_train 40000 --n_val 3000 --n_test 3000 --n_ood 2000
+python dataset/imagine_build_spatial_v2.py --n_train 40000 --n_val 3000 --n_test 3000 --n_ood 2000
 python imagine_audit_data.py imagine_cache/spatial_cot_v2/val.json
 
 # Full advanced-track pipeline
