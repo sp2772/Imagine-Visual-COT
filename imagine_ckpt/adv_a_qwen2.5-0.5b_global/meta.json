@@ -1,0 +1,1 @@
+{"epoch": 4, "args": {"model": "Qwen/Qwen2.5-0.5B", "vis": "global", "grid": 3, "n_train": 4000, "n_val": 600, "epochs": 4, "micro_bs": 8, "accum": 2, "r": 16, "lr_lora": 0.0002, "lr_reader": 0.0005, "p_null": 0.15, "no_grad_ckpt": false, "resume": false}}

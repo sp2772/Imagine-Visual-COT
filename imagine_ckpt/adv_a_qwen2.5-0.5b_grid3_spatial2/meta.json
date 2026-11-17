@@ -1,0 +1,1 @@
+{"epoch": 4, "args": {"model": "Qwen/Qwen2.5-0.5B", "vis": "grid", "grid": 3, "data": "spatial2", "n_train": 20000, "n_val": 2000, "epochs": 4, "micro_bs": 8, "accum": 2, "r": 16, "lr_lora": 0.0002, "lr_reader": 0.0005, "p_null": 0.15, "w_contrast": 0.0, "margin": 0.1, "no_init": false, "no_grad_ckpt": false, "resume": false}}
